@@ -1,5 +1,11 @@
 # web-midi-recording
 
+## Installation
+```shell
+$ npm install web-midi-recording
+```
+[npm](https://www.npmjs.com/package/web-midi-recording)
+
 ## Quick Example
 ```javascript
 const { MIDIRecording } = require('web-midi-recording');
