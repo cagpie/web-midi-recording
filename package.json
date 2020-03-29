@@ -1,23 +1,37 @@
 {
-  "name": "webpiano",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "web-midi-recording",
+  "version": "0.1.1",
+  "description": "Recording SMF(Standard MIDI File) from message by Web MIDI API",
+  "main": "src/index.js",
   "scripts": {
     "dev": "run-p dev:*",
     "dev:client": "parcel ./sample/index.html",
     "dev:server": "node ./dev-server/index.js",
     "build": "parcel build ./src/index.js"
   },
-  "author": "Shun Kobayashi <cagpie@gmail.com> (https://cagpie.net)",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cagpie/web-midi-recording.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cagpie/web-midi-recording/issues"
+  },
+  "homepage": "https://github.com/cagpie/web-midi-recording#readme",
+  "keywords": [
+    "midi",
+    "recording",
+    "web-midi-api",
+    "smf",
+    "standard-midi-file"
+  ],
+  "author": "cagpie <cagpie@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "express": "^4.17.1",
     "npm-run-all": "^4.1.5",
-    "parcel-bundler": "^1.12.4"
-  },
-  "dependencies": {
+    "parcel-bundler": "^1.12.4",
     "babel-polyfill": "^6.26.0"
-  }
+  },
+  "dependencies": {}
 }

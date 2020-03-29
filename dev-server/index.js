@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Kossori API Mock');
+  res.send('index.html');
 });
 
 app.use('/', express.static('./dist'));
