@@ -16,17 +16,13 @@ function midiMessageHandler (event) {
   switch (root) {
     case 0x8:
     case 0x9:
-      if (root === 0x9 && data[2] > 0) {
-        // Note On
-        console.log("note on", event);
-      } else {
-        // Note Off
-        console.log("note off", data);
-      }
-
-      // イベント記録
+    case 0xA:
+    case 0xB:
+    case 0xC:
+    case 0xD:
+    case 0xE:
+      // record event
       if (currentRecordingFlag) {
-        console.log(recordingData);
         recordingData.tracks[currentRecordingTrackIndex].push({
           data: data,
           startTime: timeStamp - recordingStartTime

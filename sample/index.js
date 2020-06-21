@@ -6,7 +6,7 @@ import * as MIDIRecording from '../src';
 
 async function init () {
   try {
-    const data = await navigator.requestMIDIAccess({ sysex: false });
+    const data = await navigator.requestMIDIAccess({ sysex: false })
 
     const midiInputs = new Object();
     const inputIterator = data.inputs.values();
@@ -15,8 +15,7 @@ async function init () {
     }
 
     if (!Object.keys(midiInputs).length) {
-      alert('MIDIデバイスがありません！');
-      throw new Error();
+      throw new Error('Valid MIDI Devices are not found');
     }
 
     const pianoBuffers = await loadSounds();
@@ -25,6 +24,7 @@ async function init () {
 
     main(midiInputs, pianoBuffers);
   } catch (e) {
+    console.log(e);
     alert(e);
   }
 }
@@ -44,6 +44,10 @@ function main (midiInputs, pianoBuffers) {
   const context = new AudioContext();
 
   const playingNote = new Array();
+  const holdingNote = new Array();
+  let isHolding = false;
+
+  // それっぽく鳴らす
   const soundPianoHandler = (event) => {
     const { data } = event;
 
@@ -54,7 +58,7 @@ function main (midiInputs, pianoBuffers) {
         if (root === 0x9 && data[2] > 0) {
           // Note On
           console.log("note on", event);
-          
+
           const source = context.createBufferSource();
           const gainNode = context.createGain();
           const stopGainNode = context.createGain();
@@ -77,12 +81,34 @@ function main (midiInputs, pianoBuffers) {
 
           const note = playingNote[data[1]];
           if (note) {
-            note.stopGainNode.gain.setValueAtTime(1, context.currentTime);
-            note.stopGainNode.gain.linearRampToValueAtTime(0, context.currentTime + 0.1);
-            note.source.stop(context.currentTime + 0.3);
+            if (isHolding) {
+              holdingNote[data[1]] = note;
+            } else {
+              note.stopGainNode.gain.setValueAtTime(1, context.currentTime);
+              note.stopGainNode.gain.linearRampToValueAtTime(0, context.currentTime + 0.1);
+              note.source.stop(context.currentTime + 0.3);
+            }
+
+            delete playingNote[data[1]];
           }
         }
         break;
+
+      case 0xB:
+        // Hold
+        if (data[1] === 64) {
+          isHolding = data[2] > 64;
+
+          if (!isHolding) {
+            holdingNote.forEach((note, idx) => {
+              note.stopGainNode.gain.setValueAtTime(1, context.currentTime);
+              note.stopGainNode.gain.linearRampToValueAtTime(0, context.currentTime + 0.1);
+              note.source.stop(context.currentTime + 0.3);
+
+              delete holdingNote[idx]
+            })
+          }
+        }
 
       default:
     }
@@ -108,7 +134,7 @@ function main (midiInputs, pianoBuffers) {
     smf = MIDIRecording.getSMF();
 
     linkMidiDownload.href = URL.createObjectURL(new Blob([smf]));
-    
+
     buttonRecordingStop.style.display = 'none';
     buttonPlayRecording.style.display = 'block';
     linkMidiDownload.style.display = 'block';

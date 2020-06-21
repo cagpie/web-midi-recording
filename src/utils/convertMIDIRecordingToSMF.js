@@ -13,11 +13,10 @@ export default function convertMIDIRecordingToSMF (recordingData, tempo = 120, r
   p = insertUint8List(dv, p, [0, 2]); // Track count
   p = insertUint8List(dv, p, [0, ...parseUint8(resolution)].slice(-2));
 
-  // Temp Track
+  // Tempo Track
   p = insertUint8List(dv, p, 'MTrk');
   p = insertUint8List(dv, p, [0, 0, 0, 0x0b]);
-  // TODO - テンポを任意の値に
-  p = insertUint8List(dv, p, [0, 0xff, 0x51, 0x03, 0x07, 0xA1, 0x20])
+  p = insertUint8List(dv, p, [0, 0xff, 0x51, 0x03, ...parseUint8(Math.floor(60 * (10 ** 6) / tempo))])
   p = insertUint8List(dv, p, [0, 0xff, 0x2f, 0]);
 
   // Tracks
@@ -30,7 +29,7 @@ export default function convertMIDIRecordingToSMF (recordingData, tempo = 120, r
     p = insertUint8List(dv, dataSizePoint, [0, 0, 0, 0]);
 
     track.forEach((event) => {
-      const deltaTime = Math.round((event.startTime - preEventTime) * 2 * resolution / 1000);
+      const deltaTime = Math.round((event.startTime - preEventTime) * (tempo / 60) * resolution / 1000);
       const deltaTimeUint8 = parseUint8(deltaTime, true);
 
       // Delta time
@@ -46,9 +45,9 @@ export default function convertMIDIRecordingToSMF (recordingData, tempo = 120, r
     p = insertUint8List(dv, p, [0]);
     p = insertUint8List(dv, p, [0xff, 0x2f, 0]);
 
-    // トラック頭のデータ長を改めて上書きする
+    // Rewrite data size of header
     insertUint8List(dv, dataSizePoint, [0, 0, 0, ...parseUint8(dataSize)].slice(-4));
   });
 
-  return dv.buffer;
+  return dv.buffer.slice(0, p);
 }
