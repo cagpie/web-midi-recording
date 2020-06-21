@@ -1,5 +1,8 @@
 # web-midi-recording
 
+## Demo
+[Demo](https://cagpie.net/web-midi-recording/)
+
 ## Installation
 ```shell
 $ npm install web-midi-recording
