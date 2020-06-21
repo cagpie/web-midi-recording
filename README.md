@@ -1,6 +1,7 @@
 # web-midi-recording
 
 ## Demo
+This will only work when Web MIDI API is enabled.(https://caniuse.com/#feat=midi)
 [Demo](https://cagpie.net/web-midi-recording/)
 
 ## Installation
